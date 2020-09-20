@@ -8,7 +8,13 @@ echo decrypt($sp);
 echo "<br>";
 echo decrypt($mr);
 echo "<br>";
+echo "<br>";
 encrypt("Nil Pujol");
+echo "<br>";
+$encriptat =  encryptMeu("Nil pujol!");
+echo $encriptat;
+echo "<br>";
+echo decryptMeu($encriptat);
 
 function decrypt($sp)
 {
@@ -30,12 +36,47 @@ function decrypt($sp)
         $sp[] = strrev($letter3);
     }
 
-
-
-    echo implode("", $sp);
+    return implode("", $sp);
 }
 
 function encrypt($str)
 {
-    echo bin2hex($str . $_SERVER['REMOTE_ADDR']);
+    $clave  = 'nil';
+    $method = 'aes-128-cbc';
+    $iv = base64_decode("C9fBxl1EWtYTL1/M8jfstw==");
+    $encriptar = function ($text) use ($method, $clave, $iv) {
+        return openssl_encrypt($text, $method, $clave, false, $iv);
+    };
+
+    $desencriptar = function ($text) use ($method, $clave, $iv) {
+        $encrypted_data = base64_decode($text);
+        return openssl_decrypt($text, $method, $clave, false, $iv);
+    };
+    $text_encriptat = $encriptar($str);
+    $text_desencriptat = $desencriptar($text_encriptat);
+    echo 'Encriptat: ' . $text_encriptat . '<br> Desencriptat: ' . $text_desencriptat . '<br>';
+}
+
+function encryptMeu($str)
+{
+    $clau = (int)preg_replace("/[^0-9]/", "", $_SERVER['REMOTE_ADDR']);
+    $str = str_split($str, 1);
+    foreach ($str as $lletra) {
+        $strtemp[] = (string)(ord($lletra) * $clau);
+    }
+    $str = implode("0000", $strtemp);
+
+    return bin2hex($str);
+}
+function decryptMeu($str)
+{
+    $clau = (int)preg_replace("/[^0-9]/", "", $_SERVER['REMOTE_ADDR']);
+    $str = hex2bin($str);
+
+    $str = explode("0000", $str);
+    $strtemp = array();
+    foreach ($str as $lletra) {
+        $strtemp[] = (string)chr((int)$lletra / $clau);
+    }
+    return implode("", $strtemp);
 }
