@@ -7,6 +7,8 @@ $mr = " hv ovxozwozv vj o vfrfjvivfj h vmzvlo e hrxvhlmov oz ozx.vw z xve hv loq
 echo decrypt($sp);
 echo "<br>";
 echo decrypt($mr);
+echo "<br>";
+encrypt("Nil Pujol");
 
 function decrypt($sp)
 {
@@ -21,9 +23,7 @@ function decrypt($sp)
             $sp[] = $letter;
         }
     }
-
     $temp = implode("", $sp);
-    echo `$temp<br>`;
     $sp = array();
     $sp_array = str_split($temp, 3);
     foreach ($sp_array as $letter3) {
@@ -33,4 +33,9 @@ function decrypt($sp)
 
 
     echo implode("", $sp);
+}
+
+function encrypt($str)
+{
+    echo bin2hex($str . $_SERVER['REMOTE_ADDR']);
 }
