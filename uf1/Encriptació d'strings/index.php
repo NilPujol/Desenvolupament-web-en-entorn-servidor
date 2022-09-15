@@ -6,7 +6,7 @@ $mr = " hv ovxozwozv vj o vfrfjvivfj h vmzvlo e hrxvhlmov oz ozx.vw z xve hv loq
 
 echo decrypt($sp);
 echo "<br>";
-echo decript($mr);
+echo decrypt($mr);
 
 function decrypt($sp)
 {
@@ -15,10 +15,15 @@ function decrypt($sp)
     $sp = array();
     $temp = "";
     foreach ($sp_array as $letter) {
-        $sp[] = $alfabet[count($alfabet) - array_search($letter, $alfabet) - 1];
+        if (in_array($letter, $alfabet)) {
+            $sp[] = $alfabet[count($alfabet) - array_search($letter, $alfabet) - 1];
+        } else {
+            $sp[] = $letter;
+        }
     }
 
     $temp = implode("", $sp);
+    echo `$temp<br>`;
     $sp = array();
     $sp_array = str_split($temp, 3);
     foreach ($sp_array as $letter3) {
@@ -28,8 +33,4 @@ function decrypt($sp)
 
 
     echo implode("", $sp);
-}
-
-function decript($mr)
-{
 }
