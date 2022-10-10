@@ -1,3 +1,47 @@
+<?php
+session_start();
+if (isset($_SESSION['lletres'])) {
+    generarLletres();
+}
+function generarLletres()
+{
+    $minParaules = null;
+    $i = 0;
+    while ($minParaules == null) {
+        srand(date("Ymd") + $i);
+        $alf = str_split("abcdefghijklmnopqrstuvwxyz_", 1);
+        shuffle($alf);
+        $_SESSION['LLETRA'] = $alf[0];
+        $_SESSION['lletres'] = array($alf[1], $alf[2], $alf[3], $alf[4], $alf[5], $alf[6]);
+        echo $_SESSION['LLETRA'] . implode("",  $_SESSION['lletres']) . "<br>";
+        $minParaules = comprovarParaules(3);
+        $i -= 2000;
+    }
+    var_dump($_SESSION['paraules']);
+}
+function comprovarparaules(int $cantitat)
+{
+    $funcions = get_defined_functions()['internal'];
+    $l0 = $_SESSION['LLETRA'];
+    $l1 = $_SESSION['lletres'][0];
+    $l2 = $_SESSION['lletres'][1];
+    $l3 = $_SESSION['lletres'][2];
+    $l4 = $_SESSION['lletres'][3];
+    $l5 = $_SESSION['lletres'][4];
+    $l6 = $_SESSION['lletres'][5];
+    $regex = "/^[$l0$l1$l2$l3$l4$l5$l6]+$/";
+    $_SESSION['paraules'] = array();
+    foreach ($funcions as $funcio) {
+        if (preg_match($regex, $funcio) && str_contains($funcio, $l0)) {
+            $_SESSION['paraules'][] = $funcio;
+        }
+    }
+    if (count($_SESSION['paraules']) >= 3) {
+        return $_SESSION['paraules'];
+    }
+    return null;
+}
+?>
 <!DOCTYPE html>
 <html lang="ca">
 
@@ -20,60 +64,62 @@
         <!--<div class="container-notifications">
         <p class="hide" id="message" style="">MISSATGE D'ERROR</p>
     </div>-->
+        <form method="GET" class="main" action="comprovacio.php">
+            <div class="cursor-container">
+                <p id="input-word"><span id="test-word"></span><span id="cursor">|</span></p>
+                <input type="text" hidden="true" id="test-word-input" name="paraula">
+            </div>
 
-        <div class="cursor-container">
-            <p id="input-word"><span id="test-word"></span><span id="cursor">|</span></p>
-        </div>
+            <div class="container-hexgrid">
+                <ul id="hex-grid">
+                    <li class="hex">
+                        <div class="hex-in"><a class="hex-link" data-lletra='e' draggable="false">
+                                <p>e</p>
+                            </a></div>
+                    </li>
+                    <li class="hex">
+                        <div class="hex-in"><a class="hex-link" data-lletra='s' draggable="false">
+                                <p>s</p>
+                            </a></div>
+                    </li>
+                    <li class="hex">
+                        <div class="hex-in"><a class="hex-link" data-lletra='a' draggable="false">
+                                <p>a</p>
+                            </a></div>
+                    </li>
+                    <li class="hex">
+                        <div class="hex-in"><a class="hex-link" data-lletra='u' draggable="false" id="center-letter">
+                                <p>u</p>
+                            </a></div>
+                    </li>
+                    <li class="hex">
+                        <div class="hex-in"><a class="hex-link" data-lletra='i' draggable="false">
+                                <p>i</p>
+                            </a></div>
+                    </li>
+                    <li class="hex">
+                        <div class="hex-in"><a class="hex-link" data-lletra='t' draggable="false">
+                                <p>t</p>
+                            </a></div>
+                    </li>
+                    <li class="hex">
+                        <div class="hex-in"><a class="hex-link" data-lletra='l' draggable="false">
+                                <p>l</p>
+                            </a></div>
+                    </li>
+                </ul>
+            </div>
 
-        <div class="container-hexgrid">
-            <ul id="hex-grid">
-                <li class="hex">
-                    <div class="hex-in"><a class="hex-link" data-lletra='e' draggable="false">
-                            <p>e</p>
-                        </a></div>
-                </li>
-                <li class="hex">
-                    <div class="hex-in"><a class="hex-link" data-lletra='s' draggable="false">
-                            <p>s</p>
-                        </a></div>
-                </li>
-                <li class="hex">
-                    <div class="hex-in"><a class="hex-link" data-lletra='a' draggable="false">
-                            <p>a</p>
-                        </a></div>
-                </li>
-                <li class="hex">
-                    <div class="hex-in"><a class="hex-link" data-lletra='u' draggable="false" id="center-letter">
-                            <p>u</p>
-                        </a></div>
-                </li>
-                <li class="hex">
-                    <div class="hex-in"><a class="hex-link" data-lletra='i' draggable="false">
-                            <p>i</p>
-                        </a></div>
-                </li>
-                <li class="hex">
-                    <div class="hex-in"><a class="hex-link" data-lletra='t' draggable="false">
-                            <p>t</p>
-                        </a></div>
-                </li>
-                <li class="hex">
-                    <div class="hex-in"><a class="hex-link" data-lletra='l' draggable="false">
-                            <p>l</p>
-                        </a></div>
-                </li>
-            </ul>
-        </div>
-
-        <div class="button-container">
-            <button id="delete-button" type="button" title="Suprimeix l'última lletra" onclick="suprimeix()"> Suprimeix</button>
-            <button id="shuffle-button" type="button" class="icon" aria-label="Barreja les lletres" title="Barreja les lletres">
-                <svg width="16" aria-hidden="true" focusable="false" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                    <path fill="currentColor" d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"></path>
-                </svg>
-            </button>
-            <button id="submit-button" type="submit" title="Introdueix la paraula">Introdueix</button>
-        </div>
+            <div class="button-container">
+                <button id="delete-button" type="button" title="Suprimeix l'última lletra" onclick="suprimeix()"> Suprimeix</button>
+                <button id="shuffle-button" type="button" class="icon" aria-label="Barreja les lletres" title="Barreja les lletres">
+                    <svg width="16" aria-hidden="true" focusable="false" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor" d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"></path>
+                    </svg>
+                </button>
+                <button id="submit-button" type="submit" title="Introdueix la paraula">Introdueix</button>
+            </div>
+        </form>
 
         <div class="scoreboard">
             <div>Has trobat <span id="letters-found">0</span> <span id="found-suffix">funcions</span><span id="discovered-text">.</span>
@@ -89,11 +135,13 @@
         }
 
         function afegeixLletra(lletra) {
-            document.getElementById("test-word").innerHTML += lletra
+            document.getElementById("test-word").innerHTML += lletra;
+            document.getElementById("test-word-input").value = document.getElementById("test-word").innerHTML;
         }
 
         function suprimeix() {
-            document.getElementById("test-word").innerHTML = document.getElementById("test-word").innerHTML.slice(0, -1)
+            document.getElementById("test-word").innerHTML = document.getElementById("test-word").innerHTML.slice(0, -1);
+            document.getElementById("test-word-input").value = document.getElementById("test-word").innerHTML;
         }
 
         window.onload = () => {
@@ -117,6 +165,3 @@
 </body>
 
 </html>
-<?php
-
-session_start($_COOKIE);
