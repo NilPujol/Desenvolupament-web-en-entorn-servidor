@@ -1,27 +1,37 @@
 <?php
 session_start();
-if (isset($_SESSION['lletres'])) {
-    generarLletres();
+if (isset($_GET['data'])) { //agafa data de get
+    $_SESSION['data'] = $_GET['data'];
 }
+if (!isset($_SESSION['data']) || $_SESSION['data'] != date("Ymd")) { //comprova si data buida o canviada
+    if (!isset($_SESSION['data'])) { //si es buida genera
+        $_SESSION['data'] = date("Ymd");
+    }
+    generarLletres();
+    $_SESSION['correctes'] = array();
+}
+$missatgeError = "hidden";
+if (isset($_GET['error'])) { //si hi ha un error mostra el missatge
+    $missatgeError = "shown";
+}
+var_dump($_SESSION['paraules']);
+
 function generarLletres()
 {
     $minParaules = null;
-    $i = 0;
+    srand($_SESSION['data']);
+    $funcions = get_defined_functions()['internal'];
     while ($minParaules == null) {
-        srand(date("Ymd") + $i);
         $alf = str_split("abcdefghijklmnopqrstuvwxyz_", 1);
         shuffle($alf);
         $_SESSION['LLETRA'] = $alf[0];
         $_SESSION['lletres'] = array($alf[1], $alf[2], $alf[3], $alf[4], $alf[5], $alf[6]);
-        echo $_SESSION['LLETRA'] . implode("",  $_SESSION['lletres']) . "<br>";
-        $minParaules = comprovarParaules(3);
-        $i -= 2000;
+        $minParaules = comprovarParaules(3, $funcions);
     }
-    var_dump($_SESSION['paraules']);
 }
-function comprovarparaules(int $cantitat)
+function comprovarparaules(int $cantitat, array $funcions)
 {
-    $funcions = get_defined_functions()['internal'];
+
     $l0 = $_SESSION['LLETRA'];
     $l1 = $_SESSION['lletres'][0];
     $l2 = $_SESSION['lletres'][1];
@@ -32,11 +42,11 @@ function comprovarparaules(int $cantitat)
     $regex = "/^[$l0$l1$l2$l3$l4$l5$l6]+$/";
     $_SESSION['paraules'] = array();
     foreach ($funcions as $funcio) {
-        if (preg_match($regex, $funcio) && str_contains($funcio, $l0)) {
+        if (str_contains($funcio, $l0) && preg_match($regex, $funcio)) {
             $_SESSION['paraules'][] = $funcio;
         }
     }
-    if (count($_SESSION['paraules']) >= 3) {
+    if (count($_SESSION['paraules']) >= $cantitat) {
         return $_SESSION['paraules'];
     }
     return null;
@@ -61,9 +71,9 @@ function comprovarparaules(int $cantitat)
         </h1>
 
 
-        <!--<div class="container-notifications">
-        <p class="hide" id="message" style="">MISSATGE D'ERROR</p>
-    </div>-->
+        <div class="container-notifications">
+            <p class="hide" id="message" style='visibility: <?= $missatgeError ?>;'><?= $_GET['error'] ?></p>
+        </div>
         <form method="GET" class="main" action="comprovacio.php">
             <div class="cursor-container">
                 <p id="input-word"><span id="test-word"></span><span id="cursor">|</span></p>
@@ -72,41 +82,15 @@ function comprovarparaules(int $cantitat)
 
             <div class="container-hexgrid">
                 <ul id="hex-grid">
-                    <li class="hex">
-                        <div class="hex-in"><a class="hex-link" data-lletra='e' draggable="false">
-                                <p>e</p>
-                            </a></div>
-                    </li>
-                    <li class="hex">
-                        <div class="hex-in"><a class="hex-link" data-lletra='s' draggable="false">
-                                <p>s</p>
-                            </a></div>
-                    </li>
-                    <li class="hex">
-                        <div class="hex-in"><a class="hex-link" data-lletra='a' draggable="false">
-                                <p>a</p>
-                            </a></div>
-                    </li>
-                    <li class="hex">
-                        <div class="hex-in"><a class="hex-link" data-lletra='u' draggable="false" id="center-letter">
-                                <p>u</p>
-                            </a></div>
-                    </li>
-                    <li class="hex">
-                        <div class="hex-in"><a class="hex-link" data-lletra='i' draggable="false">
-                                <p>i</p>
-                            </a></div>
-                    </li>
-                    <li class="hex">
-                        <div class="hex-in"><a class="hex-link" data-lletra='t' draggable="false">
-                                <p>t</p>
-                            </a></div>
-                    </li>
-                    <li class="hex">
-                        <div class="hex-in"><a class="hex-link" data-lletra='l' draggable="false">
-                                <p>l</p>
-                            </a></div>
-                    </li>
+                    <?php
+                    echo '<li class="hex"><div class="hex-in"><a class="hex-link" data-lletra=' . $_SESSION['lletres'][0] . ' draggable="false"><p>' . $_SESSION['lletres'][0] . '</p></a></div></li>';
+                    echo '<li class="hex"><div class="hex-in"><a class="hex-link" data-lletra=' . $_SESSION['lletres'][1] . ' draggable="false"><p>' . $_SESSION['lletres'][1] . '</p></a></div></li>';
+                    echo '<li class="hex"><div class="hex-in"><a class="hex-link" data-lletra=' . $_SESSION['lletres'][2] . ' draggable="false"><p>' . $_SESSION['lletres'][2] . '</p></a></div></li>';
+                    echo '<li class="hex"><div class="hex-in"><a class="hex-link" data-lletra=' . $_SESSION['LLETRA'] . ' draggable="false" id="center-letter"><p>' . $_SESSION['LLETRA'] . '</p></a></div> </li>';
+                    echo '<li class="hex"><div class="hex-in"><a class="hex-link" data-lletra=' . $_SESSION['lletres'][3] . ' draggable="false"><p>' . $_SESSION['lletres'][3] . '</p></a></div></li>';
+                    echo '<li class="hex"><div class="hex-in"><a class="hex-link" data-lletra=' . $_SESSION['lletres'][4] . ' draggable="false"><p>' . $_SESSION['lletres'][4] . '</p></a></div></li>';
+                    echo '<li class="hex"><div class="hex-in"><a class="hex-link" data-lletra=' . $_SESSION['lletres'][5] . ' draggable="false"><p>' . $_SESSION['lletres'][5] . '</p></a></div></li>';
+                    ?>
                 </ul>
             </div>
 
@@ -122,7 +106,9 @@ function comprovarparaules(int $cantitat)
         </form>
 
         <div class="scoreboard">
-            <div>Has trobat <span id="letters-found">0</span> <span id="found-suffix">funcions</span><span id="discovered-text">.</span>
+            <div>
+                Has trobat <span id="letters-found"><?= count($_SESSION['correctes']) ?>
+                </span> <span id="found-suffix">funcions</span><span id="discovered-text">:<?= implode(",", $_SESSION['correctes']) ?></span>
             </div>
             <div id="score"></div>
             <div id="level"></div>
