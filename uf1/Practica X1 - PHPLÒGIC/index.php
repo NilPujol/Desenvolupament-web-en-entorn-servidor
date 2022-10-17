@@ -1,5 +1,6 @@
 <?php
 session_start();
+$missatgeError = "hidden";
 if (isset($_GET['data'])) { //agafa data de get
     $_SESSION['data'] = $_GET['data'];
 }
@@ -10,7 +11,6 @@ if (!isset($_SESSION['data']) || $_SESSION['data'] != date("Ymd")) { //comprova 
     generarLletres();
     $_SESSION['correctes'] = array();
 }
-$missatgeError = "hidden";
 if (isset($_GET['error'])) { //si hi ha un error mostra el missatge
     $missatgeError = "shown";
 }
@@ -74,7 +74,7 @@ function comprovarparaules(int $cantitat, array $funcions)
         <div class="container-notifications">
             <p class="hide" id="message" style='visibility: <?= $missatgeError ?>;'><?= $_GET['error'] ?></p>
         </div>
-        <form method="GET" class="main" action="comprovacio.php">
+        <form method="POST" class="main" action="comprovacio.php">
             <div class="cursor-container">
                 <p id="input-word"><span id="test-word"></span><span id="cursor">|</span></p>
                 <input type="text" hidden="true" id="test-word-input" name="paraula">
@@ -83,13 +83,13 @@ function comprovarparaules(int $cantitat, array $funcions)
             <div class="container-hexgrid">
                 <ul id="hex-grid">
                     <?php
-                    echo '<li class="hex"><div class="hex-in"><a class="hex-link" data-lletra=' . $_SESSION['lletres'][0] . ' draggable="false"><p>' . $_SESSION['lletres'][0] . '</p></a></div></li>';
-                    echo '<li class="hex"><div class="hex-in"><a class="hex-link" data-lletra=' . $_SESSION['lletres'][1] . ' draggable="false"><p>' . $_SESSION['lletres'][1] . '</p></a></div></li>';
-                    echo '<li class="hex"><div class="hex-in"><a class="hex-link" data-lletra=' . $_SESSION['lletres'][2] . ' draggable="false"><p>' . $_SESSION['lletres'][2] . '</p></a></div></li>';
-                    echo '<li class="hex"><div class="hex-in"><a class="hex-link" data-lletra=' . $_SESSION['LLETRA'] . ' draggable="false" id="center-letter"><p>' . $_SESSION['LLETRA'] . '</p></a></div> </li>';
-                    echo '<li class="hex"><div class="hex-in"><a class="hex-link" data-lletra=' . $_SESSION['lletres'][3] . ' draggable="false"><p>' . $_SESSION['lletres'][3] . '</p></a></div></li>';
-                    echo '<li class="hex"><div class="hex-in"><a class="hex-link" data-lletra=' . $_SESSION['lletres'][4] . ' draggable="false"><p>' . $_SESSION['lletres'][4] . '</p></a></div></li>';
-                    echo '<li class="hex"><div class="hex-in"><a class="hex-link" data-lletra=' . $_SESSION['lletres'][5] . ' draggable="false"><p>' . $_SESSION['lletres'][5] . '</p></a></div></li>';
+                    for ($i = 0; $i < count($_SESSION['lletres']); $i++) {
+                        echo '<li class="hex"><div class="hex-in"><a class="hex-link" datalletra=' . $_SESSION['lletres'][$i] . ' draggable="false"><p class="valor">' . $_SESSION['lletres'][$i] . '</p></a></div></li>';
+                        if ($i == 2) {
+
+                            echo '<li class="hex"><div class="hex-in"><a class="hex-link" datalletra=' . $_SESSION['LLETRA'] . ' draggable="false" id="center-letter"><p class="valor">' . $_SESSION['LLETRA'] . '</p></a></div> </li>';
+                        }
+                    }
                     ?>
                 </ul>
             </div>
@@ -108,7 +108,7 @@ function comprovarparaules(int $cantitat, array $funcions)
         <div class="scoreboard">
             <div>
                 Has trobat <span id="letters-found"><?= count($_SESSION['correctes']) ?>
-                </span> <span id="found-suffix">funcions</span><span id="discovered-text">:<?= implode(",", $_SESSION['correctes']) ?></span>
+                </span> <span id="found-suffix">funcions</span><span id="discovered-text">: <?= implode(", ", $_SESSION['correctes']) ?></span>
             </div>
             <div id="score"></div>
             <div id="level"></div>
@@ -134,7 +134,7 @@ function comprovarparaules(int $cantitat, array $funcions)
             // Afegeix funcionalitat al click de les lletres
             Array.from(document.getElementsByClassName("hex-link")).forEach((el) => {
                 el.onclick = () => {
-                    afegeixLletra(el.getAttribute("data-lletra"))
+                    afegeixLletra(el.getAttribute("datalletra"))
                 }
             })
 
@@ -146,6 +146,21 @@ function comprovarparaules(int $cantitat, array $funcions)
                 document.getElementById("cursor").style.opacity = estat_cursor ? "1" : "0"
                 estat_cursor = !estat_cursor
             }, 500)
+            document.body.addEventListener('keyup', function(event) {
+                lletres = document.getElementsByClassName("valor");
+                esta = false;
+                for (let i = 0; i < lletres.length; i++) {
+                    if (event.key == lletres[i].innerHTML) {
+                        esta = true;
+                    }
+                }
+                if (esta) {
+                    document.getElementById("test-word").innerHTML += event.key;
+                    document.getElementById("test-word-input").value = document.getElementById("test-word").innerHTML;
+                } else if (event.key.toString() == "Backspace") {
+                    suprimeix();
+                }
+            });
         }
     </script>
 </body>
