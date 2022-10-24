@@ -1,6 +1,6 @@
 <?php
 session_start();
-if (!(isset($_SESSION['date']) && ($_SESSION['date'] - time()) <= 60)) {
+if (!isset($_SESSION['date']) || (time() - $_SESSION['date']) > 60) {
     header('Location: index.php?error=timeout', true, 303);
 }
 $users = "users.json";
