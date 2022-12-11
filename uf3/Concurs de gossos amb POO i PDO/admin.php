@@ -1,8 +1,8 @@
 <?php
 session_start();
-if (!isset($_SESSION['date']) || (time() - $_SESSION['date']) > 60) {
-    header('Location: login.php?error=timeout', true, 303);
-}
+//if (!isset($_SESSION['date']) || (time() - $_SESSION['date']) > 60) {
+//    header('Location: login.php?error=timeout', true, 303);
+//}
 
 function createUser($email, $passwd)
 {
@@ -13,6 +13,22 @@ function createUser($email, $passwd)
     try {
         $pdo = new PDO("mysql:host=$hostname;dbname=$dbname", "$username", "$pw");
         $query = $pdo->prepare("insert into users values ('$email', '$passwd')");
+        $query->execute();
+    } catch (PDOException $e) {
+        echo "Failed to get DB handle: " . $e->getMessage() . "\n";
+        exit;
+    }
+}
+
+function createDogo($nom, $img, $amo, $raça)
+{
+    $hostname = "localhost";
+    $dbname = "dwes-npujol-gossos";
+    $username = "dwes-user";
+    $pw = "dwes-passw";
+    try {
+        $pdo = new PDO("mysql:host=$hostname;dbname=$dbname", "$username", "$pw");
+        $query = $pdo->prepare("INSERT into gossos values ('$nom', '$img', '$amo', '$raça')");
         $query->execute();
     } catch (PDOException $e) {
         echo "Failed to get DB handle: " . $e->getMessage() . "\n";
@@ -133,13 +149,18 @@ function createUser($email, $passwd)
                     <input type="button" value="Modifica">
                 </form>
 
-                <form>
-                    <input type="text" placeholder="Nom">
-                    <input type="text" placeholder="Imatge">
-                    <input type="text" placeholder="Amo">
-                    <input type="text" placeholder="Raça">
-                    <input type="button" value="Afegeix">
+                <form method="post">
+                    <input type="text" placeholder="Nom" name="Nom">
+                    <input type="text" placeholder="Imatge" name="Imatge">
+                    <input type="text" placeholder="Amo" name="Amo">
+                    <input type="text" placeholder="Raça" name="Raça">
+                    <input type="submit" value="Afegeix" id="crearGos" value="RUN">
                 </form>
+                <?php
+                if (array_key_exists('crearGos', $_POST)) {
+                    createDogo($_POST['Nom'], $_POST['Imatge'], $_POST['Amo'], $_POST['Raça']);
+                }
+                ?>
             </div>
 
             <div class="admin-row">

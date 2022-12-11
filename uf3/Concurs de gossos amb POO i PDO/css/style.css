@@ -158,8 +158,7 @@ label.selectall .row .percent {
 }
 
 input[type="radio"],
-input[type="checkbox"],
-input[type="submit"] {
+input[type="checkbox"] {
     display: none;
 }
 

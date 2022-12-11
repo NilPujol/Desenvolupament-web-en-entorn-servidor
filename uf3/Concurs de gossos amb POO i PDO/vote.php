@@ -4,7 +4,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(-1);
 $hostname = "localhost";
-$dbname = "dwes-nilpujol-gossos";
+$dbname = "dwes-npujol-gossos";
 $username = "dwes-user";
 $pw = "dwes-passw";
 try {
@@ -26,10 +26,10 @@ if ($vots != null) {
     $query = $pdo->prepare("UPDATE vots SET opt = '$opt' where id='$id' and fase='$fase'");
     $query->execute();
 } else {
-    $query = $pdo->prepare("insert into vots values ('$fase', '$id','$opt')");
+    $query = $pdo->prepare("INSERT into vots values ('$fase', '$id','$opt')");
     $query->execute();
 }
-
+header('Location: resultats.php', true, 302);
 
 function getCurrentFase()
 {
