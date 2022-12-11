@@ -1,8 +1,8 @@
 <?php
 session_start();
-//if (!isset($_SESSION['date']) || (time() - $_SESSION['date']) > 60) {
-//    header('Location: login.php?error=timeout', true, 303);
-//}
+if (!isset($_SESSION['date']) || (time() - $_SESSION['date']) > 60) {
+    header('Location: login.php?error=timeout', true, 303);
+}
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(-1);
