@@ -47,8 +47,8 @@ function GetGossos(): array
                 $gossos = GetGossos();
                 for ($i = 0; $i < sizeof($gossos); $i++) {
                 ?>
-                    <label for="opt-<?php echo $i ?>" class="opt">
-                        <input type="submit" name="opt" id="opt-<?php echo $i ?>" value="<?php echo $i ?>" />
+                    <label for="opt-<?php echo $i + 1 ?>" class="opt">
+                        <input type="submit" name="opt" id="opt-<?php echo $i + 1 ?>" value="<?php echo $i + 1 ?>" />
                         <div class="row">
                             <div class="column">
                                 <div class="right">

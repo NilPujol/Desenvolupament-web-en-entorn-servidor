@@ -22,7 +22,7 @@ if ((isset($_SESSION['date']) && (time() - $_SESSION['date']) <= 60)) {
                 <h1>Inicia la sessió</h1>
                 <span>introdueix les teves credencials</span>
                 <input type="hidden" name="method" value="signin" />
-                <input type="email" placeholder="Correu electronic" name="email" />
+                <input type="text" placeholder="Correu electronic" name="email" />
                 <input type="password" placeholder="Contrasenya" name="passwd" />
                 <button>Inicia la sessió</button>
             </form>
